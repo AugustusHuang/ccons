@@ -33,8 +33,8 @@ public:
 	RemoteConsole(const char * command, bool DebugMode);
 	virtual ~RemoteConsole();
 
-	const char * prompt() const;
-	const char * input() const;
+	const char *prompt() const;
+	const char *input() const;
 	void process(const char *line);
 
 private:
@@ -62,13 +62,13 @@ public:
 	explicit SerializedOutputConsole(bool DebugMode);
 	virtual ~SerializedOutputConsole();
 
-	const char * prompt() const;
-	const char * input() const;
+	const char *prompt() const;
+	const char *input() const;
 	void process(const char *line);
 
 private:
 
-	llvm::OwningPtr<IConsole> _console;
+	std::unique_ptr<IConsole> _console;
 	std::stringstream _ss_out;
 	std::stringstream _ss_err;
 	FILE *_tmp_out;

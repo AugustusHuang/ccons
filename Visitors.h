@@ -13,7 +13,8 @@
 #include <string>
 #include <vector>
 
-#include <llvm/ADT/OwningPtr.h>
+// #include <llvm/ADT/OwningPtr.h>
+// OwningPtr<T> replaced by std::unique_ptr<T>.
 
 #include <clang/AST/AST.h>
 #include <clang/AST/ASTConsumer.h>
@@ -37,7 +38,7 @@ public:
 
 	void VisitChildren(clang::Stmt *S);
 	void VisitStmt(clang::Stmt *S);
-	clang::Stmt * getStmt() const;
+	clang::Stmt *getStmt() const;
 
 private:
 

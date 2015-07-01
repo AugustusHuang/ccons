@@ -19,12 +19,17 @@
 #include <vector>
 #include <sstream>
 
-#include <llvm/ADT/OwningPtr.h>
+// #include <llvm/ADT/OwningPtr.h>
+// OwningPtr<T> replaced by std:unique_ptr<T>.
+// --- Augustus Huang, June 30 2015
+
 #include <llvm/Support/MemoryBuffer.h>
-#include <llvm/Linker.h>
+#include <llvm/Linker/Linker.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
-#include <llvm/ExecutionEngine/JIT.h>
+// On linux it seems that MCJIT's going to be the only JIT...
+// #include <llvm/ExecutionEngine/JIT.h>
+#include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/DerivedTypes.h>
 
@@ -564,6 +569,19 @@ void Console::process(const char *line)
 	_parser->releaseAccumulatedParseOperations();
 }
 
+// EngineBuilder replaced llvm::ExecutionEngine::create.
+// July 1 2015
+static llvm::ExecutionEngine *
+createExecutionEngine(llvm::Module *M, std::string *Error)
+{
+	std::unique_ptr<llvm::Module> Mp(new llvm::Module(M->getName(),
+				M->getContext()));
+	llvm::EngineBuilder E = llvm::EngineBuilder(std::move(Mp))
+		                        .setEngineKind(llvm::EngineKind::Either)
+								.setErrorStr(Error)
+								.create();
+}
+
 bool Console::compileLinkAndRun(const string& src,
                                 const string& fName,
                                 const clang::QualType& retType)
@@ -571,7 +589,7 @@ bool Console::compileLinkAndRun(const string& src,
 	if (_debugMode)
 		oprintf(_err, "Running code-generator.\n");
 
-	llvm::OwningPtr<clang::CodeGenerator> codegen;
+	std::unique_ptr<clang::CodeGenerator> codegen;
 	clang::CodeGenOptions codeGenOptions;
 	codeGenOptions.InstrumentFunctions = false;
 	codegen.reset(CreateLLVMCodeGen(*_dp->getDiagnosticsEngine(), "-", codeGenOptions, _targetOptions, _context));
@@ -595,7 +613,10 @@ bool Console::compileLinkAndRun(const string& src,
 			_linker.reset(new llvm::Linker(_linkerModule.get()));
 		}
 		string error;
-		_linker->linkInModule(module, llvm::Linker::DestroySource, &error);
+
+		// linkInModule arguments changed.
+		// June 30 2015
+		_linker->linkInModule(module);
 		if (!error.empty()) {
 			oprintf(_err, "Error: %s\n", error.c_str());
 			reportInputError();
@@ -605,7 +626,7 @@ bool Console::compileLinkAndRun(const string& src,
 		if (!fName.empty()) {
 			module = _linker->getModule();
 			if (!_engine)
-				_engine.reset(llvm::ExecutionEngine::create(module));
+				_engine.reset(createExecutionEngine(module, &error));
 			assert(_engine && "Could not create ExecutionEngine!");
 			llvm::Function *F = module->getFunction(fName.c_str());
 			assert(F && "Function was not found!");

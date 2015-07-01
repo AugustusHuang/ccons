@@ -43,7 +43,7 @@ namespace ccons {
 //
 
 ParseOperation::ParseOperation(const clang::LangOptions& options,
-                               clang::TargetOptions* targetOptions,
+                               clang::TargetOptions *targetOptions,
                                clang::DiagnosticsEngine *diag,
                                clang::PPCallbacks *callbacks) :
 	_langOpts(options),
@@ -74,22 +74,22 @@ ParseOperation::~ParseOperation()
 {
 }
 
-clang::ASTContext * ParseOperation::getASTContext() const
+clang::ASTContext *ParseOperation::getASTContext() const
 {
 	return _ast.get();
 }
 
-clang::Preprocessor * ParseOperation::getPreprocessor() const
+clang::Preprocessor *ParseOperation::getPreprocessor() const
 {
 	return _pp.get();
 }
 
-clang::SourceManager * ParseOperation::getSourceManager() const
+clang::SourceManager *ParseOperation::getSourceManager() const
 {
 	return _sm.get();
 }
 
-clang::TargetInfo * ParseOperation::getTargetInfo() const
+clang::TargetInfo *ParseOperation::getTargetInfo() const
 {
 	return _target.get();
 }
@@ -134,7 +134,7 @@ void Parser::releaseAccumulatedParseOperations()
 }
 
 
-ParseOperation * Parser::getLastParseOperation() const
+ParseOperation *Parser::getLastParseOperation() const
 {
 	return _ops.empty() ? NULL : _ops.back();
 }
@@ -329,8 +329,8 @@ int Parser::analyzeTokens(clang::Preprocessor& PP,
 	return result;
 }
 
-ParseOperation * Parser::createParseOperation(clang::DiagnosticsEngine *engine,
-                                              clang::PPCallbacks *callbacks)
+ParseOperation *Parser::createParseOperation(clang::DiagnosticsEngine *engine,
+                                             clang::PPCallbacks *callbacks)
 {
 	return new ParseOperation(_options, _targetOptions, engine, callbacks);
 }
@@ -354,9 +354,9 @@ void Parser::parse(const string& src,
 }
 
 
-llvm::MemoryBuffer * Parser::createMemoryBuffer(const string& src,
-                                                const char *name,
-                                                clang::SourceManager *sm)
+llvm::MemoryBuffer *Parser::createMemoryBuffer(const string& src,
+                                               const char *name,
+                                               clang::SourceManager *sm)
 {
 	llvm::MemoryBuffer *mb =
 		llvm::MemoryBuffer::getMemBufferCopy(src, name);

@@ -19,7 +19,10 @@
 #include <vector>
 #include <algorithm>
 
-#include <llvm/ADT/OwningPtr.h>
+// #include <llvm/ADT/OwningPtr.h>
+// OwningPtr<T> replaced by std::unique_ptr<T>.
+// --- Augustus Huang, June 30 2015
+
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/Support/raw_os_ostream.h>
 
@@ -61,10 +64,10 @@ public:
 	virtual ~IConsole() {}
 
 	// Returns the prompt that should be presented to the user.
-	virtual const char * prompt() const = 0;
+	virtual const char *prompt() const = 0;
 
 	// Returns the initial input string that should be prepended.
-	virtual const char * input() const = 0;
+	virtual const char *input() const = 0;
 
 	// Process the specified line of user input.
 	virtual void process(const char *line) = 0;
@@ -84,8 +87,8 @@ public:
 	        std::ostream& err = std::cerr);
 	virtual ~Console();
 
-	const char * prompt() const;
-	const char * input() const;
+	const char *prompt() const;
+	const char *input() const;
 	void process(const char *line);
 
 private:
@@ -137,12 +140,12 @@ private:
 	mutable llvm::raw_os_ostream _raw_err;
 	clang::LangOptions _options;
 	clang::TargetOptions _targetOptions;
-	llvm::OwningPtr<Parser> _parser;
+	std::unique_ptr<Parser> _parser;
 	llvm::LLVMContext _context;
-	llvm::OwningPtr<llvm::Module> _linkerModule;
-	llvm::OwningPtr<llvm::Linker> _linker;
-	llvm::OwningPtr<llvm::ExecutionEngine> _engine;
-	llvm::OwningPtr<DiagnosticsProvider> _dp;
+	std::unique_ptr<llvm::Module> _linkerModule;
+	std::unique_ptr<llvm::Linker> _linker;
+	std::unique_ptr<llvm::ExecutionEngine> _engine;
+	std::unique_ptr<DiagnosticsProvider> _dp;
 	MacroDetector *_macros;
 	std::vector<std::string> _prevMacros;
 	std::vector<CodeLine> _lines;

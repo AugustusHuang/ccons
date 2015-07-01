@@ -19,7 +19,7 @@ namespace ccons {
 
 namespace {
 
-static EditLineReader * reader;
+static EditLineReader *reader;
 
 static const char *ccons_prompt(EditLine *e)
 {

@@ -27,7 +27,7 @@ public:
 
 	// Reads a line by presenting the specified prompt and pre-pending
 	// the specified input string.
-	virtual const char * readLine(const char *prompt, const char *input) = 0;
+	virtual const char *readLine(const char *prompt, const char *input) = 0;
 
 };
 
@@ -41,7 +41,7 @@ public:
 
 	StdInLineReader();
 
-	const char * readLine(const char *prompt, const char *input);
+	const char *readLine(const char *prompt, const char *input);
 
 private:
 

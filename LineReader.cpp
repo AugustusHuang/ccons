@@ -18,7 +18,7 @@ StdInLineReader::StdInLineReader()
 {
 }
 
-const char * StdInLineReader::readLine(const char *prompt, const char *input)
+const char *StdInLineReader::readLine(const char *prompt, const char *input)
 {
 	if (std::getline(std::cin, _line)) {
 		_line += "\n";

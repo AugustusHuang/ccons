@@ -49,7 +49,7 @@ void StmtFinder::VisitStmt(clang::Stmt *S)
 	}
 }
 
-clang::Stmt * StmtFinder::getStmt() const
+clang::Stmt *StmtFinder::getStmt() const
 {
 	return _S;
 }

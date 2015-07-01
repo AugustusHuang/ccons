@@ -11,7 +11,10 @@
 #include <fstream>
 #include <sstream>
 
-#include <llvm/ADT/OwningPtr.h>
+// #include <llvm/ADT/OwningPtr.h>
+// OwningPtr<T> replaced by std:unique_ptr<T>.
+// --- Augustus Huang, June 30 2015
+
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Signals.h>
@@ -44,7 +47,7 @@ static llvm::cl::opt<bool>
 	MultiProcess("ccons-multi-process",
 			llvm::cl::desc("Run in multi-process mode"));
 
-static IConsole * createConsole(const char * command)
+static IConsole *createConsole(const char *command)
 {
 	if (MultiProcess)
 		return new RemoteConsole(command, DebugMode);
@@ -54,7 +57,7 @@ static IConsole * createConsole(const char * command)
 		return new Console(DebugMode);
 }
 
-static LineReader * createReader()
+static LineReader *createReader()
 {
 	if (UseStdIo)
 		return new StdInLineReader;
@@ -76,8 +79,8 @@ int main(const int argc, char **argv)
 
 	LLVMInitializeNativeTarget();
 
-	llvm::OwningPtr<IConsole> console(createConsole(argv[0]));
-	llvm::OwningPtr<LineReader> reader(createReader());
+	std::unique_ptr<IConsole> console(createConsole(argv[0]));
+	std::unique_ptr<LineReader> reader(createReader());
 
 	const char *line = reader->readLine(console->prompt(), console->input());
 	while (line) {

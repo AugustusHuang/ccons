@@ -13,7 +13,9 @@
 
 #include <algorithm>
 
-#include <llvm/ADT/OwningPtr.h>
+// #include <llvm/ADT/OwningPtr.h>
+// OwningPtr<T> replaced by std::unique_ptr<T>.
+// --- Augustus Huang, June 30 2015
 
 namespace clang {
 	class SourceLocation;

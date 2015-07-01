@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 find_program(LLVM_CONFIG_EXECUTABLE NAMES llvm-config PATHS "../../Release+Asserts/bin" NO_DEFAULT_PATH)
 find_program(LLVM_CONFIG_EXECUTABLE NAMES llvm-config PATHS "../../Debug+Asserts/bin" NO_DEFAULT_PATH)
+find_program(LLVM_CONFIG_EXECUTABLE NAMES llvm-config PATHS "../../build/bin" NO_DEFAULT_PATH)
 find_program(LLVM_CONFIG_EXECUTABLE llvm-config)
 
 if(NOT LLVM_CONFIG_EXECUTABLE)
@@ -28,6 +29,8 @@ add_executable(ccons ${CCONS_SRCS} ${CCONS_HDRS})
 include_directories(${LLVM_INCLUDE_DIR})
 include_directories(../../include/)
 include_directories(../clang/include/)
+include_directories(../../build/include/)
+include_directories(../../build/tools/clang/include/)
 
 set_target_properties(ccons PROPERTIES LINK_FLAGS "${LLVM_LDFLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O0 -g")

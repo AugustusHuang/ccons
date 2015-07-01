@@ -58,14 +58,20 @@ DiagnosticsProvider::DiagnosticsProvider(llvm::raw_os_ostream& out)
 {
 	_dop->ShowColumn = 0;
 	_dop->ShowSourceRanges = 1;
-	_engine.setDiagnosticMapping((clang::diag::kind)clang::diag::ext_implicit_function_decl,
-	                             clang::diag::MAP_ERROR, clang::SourceLocation());
-	_engine.setDiagnosticMapping((clang::diag::kind)clang::diag::warn_unused_expr,
-	                             clang::diag::MAP_IGNORE, clang::SourceLocation());
-	_engine.setDiagnosticMapping((clang::diag::kind)clang::diag::warn_missing_prototype,
-	                             clang::diag::MAP_IGNORE, clang::SourceLocation());
-	_engine.setDiagnosticMapping((clang::diag::kind)clang::diag::pp_macro_not_used,
-	                             clang::diag::MAP_IGNORE, clang::SourceLocation());
+
+	// setDiagnosticMapping was replaced by setSeverity.
+	_engine.setSeverity((clang::diag::kind)clang::diag::ext_implicit_function_decl,
+	                             clang::diag::Severity::Error,
+								 clang::SourceLocation());
+	_engine.setSeverity((clang::diag::kind)clang::diag::warn_unused_expr,
+	                             clang::diag::Severity::Ignored,
+								 clang::SourceLocation());
+	_engine.setSeverity((clang::diag::kind)clang::diag::warn_missing_prototype,
+	                             clang::diag::Severity::Ignored,
+								 clang::SourceLocation());
+	_engine.setSeverity((clang::diag::kind)clang::diag::pp_macro_not_used,
+	                             clang::diag::Severity::Ignored,
+								 clang::SourceLocation());
 	_engine.setSuppressSystemWarnings(true);
 }
 
@@ -89,7 +95,7 @@ void DiagnosticsProvider::setOffset(unsigned offset)
 	_offs = offset;
 }
 
-clang::DiagnosticsEngine * DiagnosticsProvider::getDiagnosticsEngine()
+clang::DiagnosticsEngine *DiagnosticsProvider::getDiagnosticsEngine()
 {
 	return &_engine;
 }
@@ -124,7 +130,7 @@ bool ProxyDiagnosticConsumer::hadErrors() const
 	return !_errors.empty();
 }
 
-clang::DiagnosticConsumer * ProxyDiagnosticConsumer::clone(clang::DiagnosticsEngine& engine) const
+clang::DiagnosticConsumer *ProxyDiagnosticConsumer::clone(clang::DiagnosticsEngine& engine) const
 {
 	ProxyDiagnosticConsumer *clone = new ProxyDiagnosticConsumer(_DC);
 	clone->_errors = _errors;
@@ -142,12 +148,12 @@ NullDiagnosticProvider::NullDiagnosticProvider()
 {
 }
 
-clang::DiagnosticsEngine * NullDiagnosticProvider::getDiagnosticsEngine()
+clang::DiagnosticsEngine *NullDiagnosticProvider::getDiagnosticsEngine()
 {
 	return &_engine;
 }
 
-ProxyDiagnosticConsumer * NullDiagnosticProvider::getProxyDiagnosticConsumer()
+ProxyDiagnosticConsumer *NullDiagnosticProvider::getProxyDiagnosticConsumer()
 {
 	return _pdc;
 }

@@ -14,7 +14,8 @@
 #include <string>
 #include <vector>
 
-#include <llvm/ADT/OwningPtr.h>
+// #include <llvm/ADT/OwningPtr.h>
+// OwningPtr<T> replaced by std::unique_ptr<T>.
 #include <llvm/Support/MemoryBuffer.h>
 
 #include <clang/Basic/FileManager.h>
@@ -50,15 +51,15 @@ class ParseOperation : public clang::ModuleLoader {
 public:
 	
 	ParseOperation(const clang::LangOptions& options,
-	               clang::TargetOptions* targetOptions,
+	               clang::TargetOptions *targetOptions,
 	               clang::DiagnosticsEngine *engine,
 	               clang::PPCallbacks *callbacks = 0);
 	virtual ~ParseOperation();
 
-	clang::ASTContext * getASTContext() const;
-	clang::Preprocessor * getPreprocessor() const;
-	clang::SourceManager * getSourceManager() const;
-	clang::TargetInfo * getTargetInfo() const;
+	clang::ASTContext *getASTContext() const;
+	clang::Preprocessor *getPreprocessor() const;
+	clang::SourceManager *getSourceManager() const;
+	clang::TargetInfo *getTargetInfo() const;
 
 	virtual clang::ModuleLoadResult loadModule(clang::SourceLocation ImportLoc,
 	                                           clang::ModuleIdPath Path,
@@ -74,13 +75,13 @@ private:
 	clang::LangOptions _langOpts;
 	llvm::IntrusiveRefCntPtr<clang::HeaderSearchOptions> _hsOptions;
 	llvm::IntrusiveRefCntPtr<clang::PreprocessorOptions> _ppOptions;
-	llvm::OwningPtr<clang::FileSystemOptions> _fsOpts;
-	llvm::OwningPtr<clang::FileManager> _fm;
-	llvm::OwningPtr<clang::SourceManager> _sm;
-	llvm::OwningPtr<clang::HeaderSearch> _hs;
-	llvm::OwningPtr<clang::Preprocessor> _pp;
-	llvm::OwningPtr<clang::ASTContext> _ast;
-	llvm::OwningPtr<clang::TargetInfo> _target;
+	std::unique_ptr<clang::FileSystemOptions> _fsOpts;
+	std::unique_ptr<clang::FileManager> _fm;
+	std::unique_ptr<clang::SourceManager> _sm;
+	std::unique_ptr<clang::HeaderSearch> _hs;
+	std::unique_ptr<clang::Preprocessor> _pp;
+	std::unique_ptr<clang::ASTContext> _ast;
+	std::unique_ptr<clang::TargetInfo> _target;
 
 };
 
@@ -93,7 +94,7 @@ class Parser {
 
 public:
 
-	Parser(const clang::LangOptions& options, clang::TargetOptions* targetOptions);
+	Parser(const clang::LangOptions& options, clang::TargetOptions *targetOptions);
 	~Parser();
 
 	enum InputType { Incomplete, TopLevel, Stmt }; 
@@ -106,7 +107,7 @@ public:
 
 	// Create a new ParseOperation that the caller should take ownership of
 	// and the lifetime of which must be shorter than of the Parser.
-	ParseOperation * createParseOperation(clang::DiagnosticsEngine *engine,
+	ParseOperation *createParseOperation(clang::DiagnosticsEngine *engine,
 	                                      clang::PPCallbacks *callbacks = 0);
 
 	// Parse the specified source code with the specified parse operation
@@ -123,7 +124,7 @@ public:
 	           clang::ASTConsumer *consumer);
 
 	// Returns the last parse operation or NULL if there isn't one.
-	ParseOperation * getLastParseOperation() const;
+	ParseOperation *getLastParseOperation() const;
 
 	// Release any accumulated parse operations (including their resulting
 	// ASTs and other clang data structures).
@@ -132,7 +133,7 @@ public:
 private:
 
 	const clang::LangOptions& _options;
-	clang::TargetOptions* _targetOptions;
+	clang::TargetOptions *_targetOptions;
 	std::vector<ParseOperation*> _ops;
 
 	int analyzeTokens(clang::Preprocessor& PP,
@@ -141,9 +142,9 @@ private:
 	                  int& IndentLevel,
 	                  bool& TokWasDo);
 
-	static llvm::MemoryBuffer * createMemoryBuffer(const std::string& src,
-	                                               const char *name,
-	                                               clang::SourceManager *sm);
+	static llvm::MemoryBuffer *createMemoryBuffer(const std::string& src,
+	                                              const char *name,
+	                                              clang::SourceManager *sm);
 
 };
 

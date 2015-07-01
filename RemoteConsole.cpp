@@ -66,8 +66,8 @@ private:
 /// @endverbatim
 void UnescapeString(std::string &Str) {
   for (unsigned i = 0; i != Str.size(); ++i) {
-    if (Str[i] == '\\' && i != Str.size()-1) {
-      switch (Str[i+1]) {
+    if (Str[i] == '\\' && i != Str.size() - 1) {
+      switch (Str[i + 1]) {
       default: continue;  // Don't execute the code after the switch.
       case 'a': Str[i] = '\a'; break;
       case 'b': Str[i] = '\b'; break;
@@ -82,7 +82,7 @@ void UnescapeString(std::string &Str) {
       case '\\': Str[i] = '\\'; break;
       }
       // Nuke the second character.
-      Str.erase(Str.begin()+i+1);
+      Str.erase(Str.begin() + i + 1);
     }
   }
 }
@@ -93,22 +93,22 @@ void EscapeString(std::string &Str) {
   for (unsigned i = 0; i != Str.size(); ++i) {
     if (Str[i] == '\\') {
       ++i;
-      Str.insert(Str.begin()+i, '\\');
+      Str.insert(Str.begin() + i, '\\');
     } else if (Str[i] == '\t') {
       Str[i++] = '\\';
-      Str.insert(Str.begin()+i, 't');
+      Str.insert(Str.begin() + i, 't');
     } else if (Str[i] == '"') {
-      Str.insert(Str.begin()+i++, '\\');
+      Str.insert(Str.begin() + i++, '\\');
     } else if (Str[i] == '\n') {
       Str[i++] = '\\';
-      Str.insert(Str.begin()+i, 'n');
+      Str.insert(Str.begin() + i, 'n');
     } else if (!std::isprint(Str[i])) {
       // Always expand to a 3-digit octal escape.
       unsigned Char = Str[i];
       Str[i++] = '\\';
-      Str.insert(Str.begin()+i++, '0'+((Char/64) & 7));
-      Str.insert(Str.begin()+i++, '0'+((Char/8)  & 7));
-      Str.insert(Str.begin()+i  , '0'+( Char     & 7));
+      Str.insert(Str.begin() + i++, '0' + ((Char/64) & 7));
+      Str.insert(Str.begin() + i++, '0' + ((Char/8)  & 7));
+      Str.insert(Str.begin() + i  , '0' + ( Char     & 7));
     }
   }
 }
@@ -224,7 +224,7 @@ const std::string& SerializedConsoleOutput::input() const
 // RemoteConsole
 //
 
-RemoteConsole::RemoteConsole(const char * command, bool DebugMode) :
+RemoteConsole::RemoteConsole(const char *command, bool DebugMode) :
 	_command(command),
 	_DebugMode(DebugMode)
 {
@@ -266,12 +266,12 @@ void RemoteConsole::reset()
 	_input = "";
 }
 
-const char * RemoteConsole::prompt() const
+const char *RemoteConsole::prompt() const
 {
 	return _prompt.c_str();
 }
 
-const char * RemoteConsole::input() const
+const char *RemoteConsole::input() const
 {
 	return _input.c_str();
 }
@@ -326,12 +326,12 @@ SerializedOutputConsole::~SerializedOutputConsole()
 {
 }
 
-const char * SerializedOutputConsole::prompt() const
+const char *SerializedOutputConsole::prompt() const
 {
 	return _console->prompt();
 }
 
-const char * SerializedOutputConsole::input() const
+const char *SerializedOutputConsole::input() const
 {
 	return _console->input();
 }

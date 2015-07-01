@@ -39,7 +39,7 @@ public:
 
 	void setOffset(unsigned offset);
 
-	clang::DiagnosticsEngine * getDiagnosticsEngine();
+	clang::DiagnosticsEngine *getDiagnosticsEngine();
 
 private:
 
@@ -68,7 +68,7 @@ public:
 
 	bool hadError(clang::diag::kind Kind) const;
 	bool hadErrors() const;
-	clang::DiagnosticConsumer * clone(clang::DiagnosticsEngine& Diags) const;
+	clang::DiagnosticConsumer *clone(clang::DiagnosticsEngine& Diags) const;
 
 private:
 
@@ -87,8 +87,8 @@ public:
 
 	NullDiagnosticProvider();
 
-	clang::DiagnosticsEngine * getDiagnosticsEngine();
-	ProxyDiagnosticConsumer * getProxyDiagnosticConsumer();
+	clang::DiagnosticsEngine *getDiagnosticsEngine();
+	ProxyDiagnosticConsumer *getProxyDiagnosticConsumer();
 
 private:
 

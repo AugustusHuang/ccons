@@ -14,7 +14,7 @@
 
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Support/DynamicLibrary.h>
-#include <llvm/Support/PathV1.h>
+#include <llvm/Support/Path.h>
 
 namespace ccons {
 
@@ -93,6 +93,7 @@ bool HandleInternalCommand(const char *input, bool debugMode,
 	return false;
 }
 
+// TODO: When I take over this project, change them.
 // Prints ccons version information to the specified ostream.
 void PrintVersionInformation(std::ostream& out)
 {

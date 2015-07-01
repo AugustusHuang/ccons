@@ -26,8 +26,8 @@ public:
 	EditLineReader();
 	virtual ~EditLineReader();
 
-	const char * readLine(const char *prompt, const char *input);
-	const char * getPrompt() const;
+	const char *readLine(const char *prompt, const char *input);
+	const char *getPrompt() const;
 
 private:
 
