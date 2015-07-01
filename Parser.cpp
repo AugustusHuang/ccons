@@ -37,7 +37,6 @@ using std::string;
 
 namespace ccons {
 
-
 //
 // ParseOperation
 //
@@ -53,21 +52,26 @@ ParseOperation::ParseOperation(const clang::LangOptions& options,
 	_fm(new clang::FileManager(*_fsOpts)),
 	_sm(new clang::SourceManager(*diag, *_fm))
 {
-	_target.reset(clang::TargetInfo::CreateTargetInfo(*diag, new clang::TargetOptions(*targetOptions)));
-
-	_hs.reset(new clang::HeaderSearch(_hsOptions, *_fm, *diag, options, &*_target));
+	// CreateTargetInfo argument changed to shared_ptr.
+	// HeaderSearch argument changed from FileManager& to SourceManager&.
+	// Preprocessor argument removed TargetInfo*.
+	// addPPCallbacks argument changed from PPCallbacks* to unique_ptr.
+	// InitializePreprocessor argument removed HeaderSearchOptions.
+	// ASTContext arguments removed TargetInfo*, unsigned, bool.
+	// July 1 2015
+	std::shared_ptr<clang::TargetOptions> targetOptionsp(new (clang::TargetOptions(*targetOptions)));
+	_target.reset(clang::TargetInfo::CreateTargetInfo(*diag, targetOptionsp));
+	_hs.reset(new clang::HeaderSearch(_hsOptions, *_sm, *diag, options, &*_target));
 	ApplyHeaderSearchOptions(*_hs, *_hsOptions, options, llvm::Triple(targetOptions->Triple));
-	_pp.reset(new clang::Preprocessor(_ppOptions, *diag, _langOpts, &*_target, *_sm, *_hs, *this));
-	_pp->addPPCallbacks(callbacks);
+	_pp.reset(new clang::Preprocessor(_ppOptions, *diag, _langOpts, *_sm, *_hs, *this));
+	_pp->addPPCallbacks(llvm::make_unique<clang::PPCallbacks>(*callbacks));
 	clang::FrontendOptions frontendOptions;
-	InitializePreprocessor(*_pp, *_ppOptions, *_hsOptions, frontendOptions);
+	InitializePreprocessor(*_pp, *_ppOptions, frontendOptions);
 	_ast.reset(new clang::ASTContext(_langOpts,
 	                                 *_sm,
-	                                 &*_target,
 	                                 _pp->getIdentifierTable(),
 	                                 _pp->getSelectorTable(),
-	                                 _pp->getBuiltinInfo(),
-	                                 0));
+	                                 _pp->getBuiltinInfo()));
 }
 
 ParseOperation::~ParseOperation()
@@ -150,7 +154,7 @@ Parser::InputType Parser::analyzeInput(const string& contextSource,
 	}
 
 	NullDiagnosticProvider ndp;
-	llvm::OwningPtr<ParseOperation>
+	std::unique_ptr<ParseOperation>
 		parseOp(new ParseOperation(_options, _targetOptions, ndp.getDiagnosticsEngine()));
 	llvm::MemoryBuffer *memBuf =
 		createMemoryBuffer(buffer, "", parseOp->getSourceManager());
@@ -171,8 +175,11 @@ Parser::InputType Parser::analyzeInput(const string& contextSource,
 		NullDiagnosticProvider ndp;
 		clang::DiagnosticsEngine& engine = *ndp.getDiagnosticsEngine();
 		// Setting this ensures "foo();" is not a valid top-level declaration.
-		engine.setDiagnosticMapping(clang::diag::ext_missing_type_specifier,
-		                          clang::diag::MAP_ERROR, clang::SourceLocation());
+		// setDiagnosticMapping changed to setSeverity.
+		// July 1 2015
+		engine.setSeverity(clang::diag::ext_missing_type_specifier,
+		                          clang::diag::Severity::Error,
+								  clang::SourceLocation());
 		engine.setSuppressSystemWarnings(true);
 		string src = contextSource + buffer;
 		struct : public clang::ASTConsumer {
@@ -187,13 +194,13 @@ Parser::InputType Parser::analyzeInput(const string& contextSource,
 						clang::SourceLocation Loc = FD->getTypeSpecStartLoc();
 						if (!Loc.isValid())
 							continue;
-						if (sm->isFromMainFile(Loc)) {
+						if (sm->isWrittenInMainFile(Loc)) {
 							unsigned offset = sm->getFileOffset(sm->getExpansionLoc(Loc));
 							if (offset >= pos) {
 								fds.push_back(FD);
 							}
 						} else {
-							while (!sm->isFromMainFile(Loc)) {
+							while (!sm->isWrittenInMainFile(Loc)) {
 								const clang::SrcMgr::SLocEntry& Entry =
 									sm->getSLocEntry(sm->getFileID(sm->getSpellingLoc(Loc)));
 								if (!Entry.isFile())
@@ -353,17 +360,17 @@ void Parser::parse(const string& src,
 	parse(src, createParseOperation(engine), consumer);
 }
 
-
 llvm::MemoryBuffer *Parser::createMemoryBuffer(const string& src,
                                                const char *name,
                                                clang::SourceManager *sm)
 {
-	llvm::MemoryBuffer *mb =
-		llvm::MemoryBuffer::getMemBufferCopy(src, name);
+	// Convert to std::unique_ptr<llvm::MemoryBuffer>.
+	std::unique_ptr<llvm::MemoryBuffer> mb;
+	mb = std::move(llvm::MemoryBuffer::getMemBufferCopy(src, name));
 	assert(mb && "Error creating MemoryBuffer!");
-	sm->createMainFileIDForMemBuffer(mb);
+	sm->createFileID(std::move(mb));
 	assert(!sm->getMainFileID().isInvalid() && "Error creating MainFileID!");
-	return mb;
+	return mb.get();
 }
 
 } // namespace ccons

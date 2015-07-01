@@ -66,10 +66,16 @@ public:
 	                                           clang::Module::NameVisibilityKind Visibility,
 	                                           bool IsInclusionDirective);
 
-  virtual void makeModuleVisible(clang::Module *Mod,
-                                 clang::Module::NameVisibilityKind Visibility,
-                                 clang::SourceLocation ImportLoc,
-                                 bool Complain);
+    virtual void makeModuleVisible(clang::Module *Mod,
+                                   clang::Module::NameVisibilityKind Visibility,
+                                   clang::SourceLocation ImportLoc,
+                                   bool Complain);
+
+	virtual clang::GlobalModuleIndex *loadGlobalModuleIndex(
+			clang::SourceLocation TriggerLoc);
+
+	virtual bool lookupMissingImports(clang::StringRef Name,
+			clang::SourceLocation TriggerLoc);
 private:
 
 	clang::LangOptions _langOpts;

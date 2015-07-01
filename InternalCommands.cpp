@@ -12,9 +12,11 @@
 
 #include <string.h>
 
+// PathV1.h removed from llvm totally.
+// July 1 2015
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Support/DynamicLibrary.h>
-#include <llvm/Support/Path.h>
+#include <llvm/Support/FileSystem.h>
 
 namespace ccons {
 
@@ -35,6 +37,21 @@ static void HandleVersionCommand(const char *arg, bool debugMode,
 	PrintVersionInformation(out);
 }															
 
+// PathV1 removed, support it manually...
+static bool isDynamicLibrary(StringRef arg)
+{
+	switch (llvm::sys::fs::identify_magic(arg)) {
+		case llvm::sys::fs::file_magic::macho_fixed_virtual_memory_shared_lib:
+		case llvm::sys::fs::file_magic::macho_dynamically_linked_shared_lib:
+		case llvm::sys::fs::file_magic::macho_dynamically_linked_shared_lib_stub:
+		case llvm::sys::fs::file_magic::elf_shared_object:
+		case llvm::sys::fs::file_magic::pecoff_executable:
+			return true;
+		default:
+			return false;
+	}
+}
+
 // Loads the library that was specified. 
 static void HandleLoadCommand(const char *arg, bool debugMode,
                               std::ostream& out, std::ostream& err)
@@ -42,8 +59,7 @@ static void HandleLoadCommand(const char *arg, bool debugMode,
 	if (debugMode)
 		oprintf(err, "Attempting to load external library '%s'.\n", arg);
 
-	llvm::sys::Path path(arg);
-	if (path.isDynamicLibrary()) {
+	if (isDynamicLibrary(arg)) {
 		std::string errMsg;
 		llvm::sys::DynamicLibrary::LoadLibraryPermanently(arg, &errMsg);
 		if (!errMsg.empty()) {
