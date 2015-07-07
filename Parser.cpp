@@ -98,20 +98,6 @@ clang::TargetInfo *ParseOperation::getTargetInfo() const
 	return _target.get();
 }
 
-clang::ModuleLoadResult ParseOperation::loadModule(clang::SourceLocation ImportLoc,
-                                                   clang::ModuleIdPath Path,
-                                                   clang::Module::NameVisibilityKind Visibility,
-                                                   bool IsInclusionDirective)
-{
-	return clang::ModuleLoadResult();
-}
-
-void ParseOperation::makeModuleVisible(clang::Module *Mod,
-                                       clang::Module::NameVisibilityKind Visibility,
-                                       clang::SourceLocation ImportLoc,
-                                       bool Complain) {
-}
-
 //
 // Parser
 //

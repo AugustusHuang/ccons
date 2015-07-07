@@ -45,7 +45,7 @@ include_directories(${CMAKE_SOURCE_DIR}/../../../build/include/)
 include_directories(${CMAKE_SOURCE_DIR}/../../../build/tools/clang/include/)
 
 set_target_properties(ccons PROPERTIES LINK_FLAGS "${LLVM_LDFLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O0 -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O0 -g -fno-rtti")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXX_FLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LLVM_C_FLAGS}")

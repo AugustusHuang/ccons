@@ -25,6 +25,8 @@
 #include <clang/Lex/PreprocessorOptions.h>
 #include <clang/Lex/HeaderSearch.h>
 #include <clang/Lex/ModuleLoader.h>
+// In order to get definition of GlobalModuleIndex.
+#include <clang/Serialization/GlobalModuleIndex.h>
 
 namespace clang {
 	class ASTConsumer;
@@ -61,21 +63,28 @@ public:
 	clang::SourceManager *getSourceManager() const;
 	clang::TargetInfo *getTargetInfo() const;
 
-	virtual clang::ModuleLoadResult loadModule(clang::SourceLocation ImportLoc,
-	                                           clang::ModuleIdPath Path,
-	                                           clang::Module::NameVisibilityKind Visibility,
-	                                           bool IsInclusionDirective);
+	clang::ModuleLoadResult loadModule(clang::SourceLocation ImportLoc,
+	                                   clang::ModuleIdPath Path,
+	                                   clang::Module::NameVisibilityKind Visibility,
+                                       bool IsInclusionDirective) override {
+		return clang::ModuleLoadResult();
+	};
 
-    virtual void makeModuleVisible(clang::Module *Mod,
-                                   clang::Module::NameVisibilityKind Visibility,
-                                   clang::SourceLocation ImportLoc,
-                                   bool Complain);
+    void makeModuleVisible(clang::Module *Mod,
+                           clang::Module::NameVisibilityKind Visibility,
+                           clang::SourceLocation ImportLoc,
+                           bool Complain) override {};
 
-	virtual clang::GlobalModuleIndex *loadGlobalModuleIndex(
-			clang::SourceLocation TriggerLoc);
+	clang::GlobalModuleIndex *loadGlobalModuleIndex(
+			clang::SourceLocation TriggerLoc) {
+		return nullptr;
+	};
 
-	virtual bool lookupMissingImports(clang::StringRef Name,
-			clang::SourceLocation TriggerLoc);
+	bool lookupMissingImports(clang::StringRef Name,
+			clang::SourceLocation TriggerLoc) {
+		return 0;
+	};
+
 private:
 
 	clang::LangOptions _langOpts;
