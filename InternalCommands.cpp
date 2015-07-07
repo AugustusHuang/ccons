@@ -38,9 +38,10 @@ static void HandleVersionCommand(const char *arg, bool debugMode,
 }															
 
 // PathV1 removed, support it manually...
-static bool isDynamicLibrary(StringRef arg)
+static bool isDynamicLibrary(const char *arg)
 {
-	switch (llvm::sys::fs::identify_magic(arg)) {
+	llvm::StringRef sr = llvm::StringRef(arg);
+	switch (llvm::sys::fs::identify_magic(sr)) {
 		case llvm::sys::fs::file_magic::macho_fixed_virtual_memory_shared_lib:
 		case llvm::sys::fs::file_magic::macho_dynamically_linked_shared_lib:
 		case llvm::sys::fs::file_magic::macho_dynamically_linked_shared_lib_stub:

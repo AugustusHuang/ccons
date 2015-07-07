@@ -576,10 +576,10 @@ createExecutionEngine(llvm::Module *M, std::string *Error)
 {
 	std::unique_ptr<llvm::Module> Mp(new llvm::Module(M->getName(),
 				M->getContext()));
-	llvm::EngineBuilder E = llvm::EngineBuilder(std::move(Mp))
-		                        .setEngineKind(llvm::EngineKind::Either)
-								.setErrorStr(Error)
-								.create();
+	return llvm::EngineBuilder(std::move(Mp)
+			.setEngineKind(llvm::EngineKind::Either)
+			.setErrorStr(Error)
+			.create();
 }
 
 bool Console::compileLinkAndRun(const string& src,

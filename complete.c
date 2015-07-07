@@ -1,11 +1,11 @@
-//
-// Functions which provide file system path auto-completion.
-//
-// Part of ccons, the interactive console for the C programming language.
-//
-// Copyright (c) 2009 Alexei Svitkine. This file is distributed under the
-// terms of MIT Open Source License. See file LICENSE for details.
-//
+/*
+ * Functions which provide file system path auto-completion.
+ *
+ * Part of ccons, the interactive console for the C programming language.
+ *
+ * Copyright (c) 2009 Alexei Svitkine. This file is distributed under the
+ * terms of MIT Open Source License. See file LICENSE for details.
+ */
 
 #include "complete.h"
 
@@ -17,9 +17,10 @@
 #include <sys/param.h>
 #include <sys/stat.h>
 
-// Returns the next auto-completion character, or '\0' if there isn't one.
-// A character will only be returned if can complete the prefix and there
-// are no other such matches.
+/* Returns the next auto-completion character, or '\0' if there isn't one.
+ * A character will only be returned if can complete the prefix and there
+ * are no other such matches.
+ */
 static char next_prefix_char(DIR *d, const char *prefix, unsigned prefix_length)
 {
 	struct dirent *entry;
@@ -30,7 +31,7 @@ static char next_prefix_char(DIR *d, const char *prefix, unsigned prefix_length)
 			if (nextch == '\0') {
 				nextch = entry->d_name[prefix_length];
 			} else if (nextch != entry->d_name[prefix_length]) {
-				// Multiple matches => no completion.
+				/* Multiple matches => no completion. */
 				nextch = '\0';
 				break;
 			}

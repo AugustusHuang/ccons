@@ -14,7 +14,7 @@ How to build:
 
 2. Move the ccons directory to llvm/tools/ccons.
 
-3. Install editline 3.0 from:
+3. Install editline from:
 
    http://www.thrysoee.dk/editline/
 
