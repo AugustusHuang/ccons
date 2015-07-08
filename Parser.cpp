@@ -75,6 +75,9 @@ ParseOperation::ParseOperation(const clang::LangOptions& options,
 	                                 _pp->getIdentifierTable(),
 	                                 _pp->getSelectorTable(),
 	                                 _pp->getBuiltinInfo()));
+	// Since ASTContext constructer used to have this...
+	// July 8 2015
+	_ast->InitBuiltinTypes(*_target.get());
 }
 
 ParseOperation::~ParseOperation()
@@ -211,7 +214,7 @@ Parser::InputType Parser::analyzeInput(const string& contextSource,
 		consumer.pos = contextSource.length();
 		consumer.maxPos = consumer.pos + buffer.length();
 		consumer.sm = parseOp->getSourceManager();
-		parse(src, parseOp, &consumer);
+		parse(src, std::move(parseOp), &consumer);
 		ProxyDiagnosticConsumer *pdc = ndp.getProxyDiagnosticConsumer();
 		if (pdc->hadError(clang::diag::err_unterminated_block_comment))
 			return Incomplete;
@@ -355,11 +358,13 @@ llvm::MemoryBuffer *Parser::createMemoryBuffer(const string& src,
 {
 	// Convert to std::unique_ptr<llvm::MemoryBuffer>.
 	std::unique_ptr<llvm::MemoryBuffer> mb;
-	mb = std::move(llvm::MemoryBuffer::getMemBufferCopy(src, name));
+	mb = std::move(llvm::MemoryBuffer::getMemBufferCopy(llvm::StringRef(src),
+				llvm::Twine(name)));
+	llvm::MemoryBuffer *mbp = mb.get();
 	assert(mb && "Error creating MemoryBuffer!");
-	sm->createFileID(std::move(mb));
+	sm->setMainFileID(sm->createFileID(std::move(mb)));
 	assert(!sm->getMainFileID().isInvalid() && "Error creating MainFileID!");
-	return mb.get();
+	return mbp;
 }
 
 } // namespace ccons

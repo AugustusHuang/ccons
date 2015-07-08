@@ -572,7 +572,7 @@ void Console::process(const char *line)
 // EngineBuilder replaced llvm::ExecutionEngine::create.
 // July 1 2015
 static llvm::ExecutionEngine *
-createExecutionEngine(llvm::Module *M, std::string *Error)
+createExecutionEngine(llvm::Module *M, string *Error)
 {
 	std::unique_ptr<llvm::Module> Mp(new llvm::Module(M->getName(),
 				M->getContext()));
