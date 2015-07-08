@@ -59,11 +59,14 @@ ParseOperation::ParseOperation(const clang::LangOptions& options,
 	// InitializePreprocessor argument removed HeaderSearchOptions.
 	// ASTContext arguments removed TargetInfo*, unsigned, bool.
 	// July 1 2015
-	std::shared_ptr<clang::TargetOptions> targetOptionsp(new clang::TargetOptions(*targetOptions));
-	_target.reset(clang::TargetInfo::CreateTargetInfo(*diag, targetOptionsp));
+	auto sp = std::make_shared<clang::TargetOptions>(*targetOptions);
+	_target.reset(clang::TargetInfo::CreateTargetInfo(*diag, sp));
 	_hs.reset(new clang::HeaderSearch(_hsOptions, *_sm, *diag, options, &*_target));
 	ApplyHeaderSearchOptions(*_hs, *_hsOptions, options, llvm::Triple(targetOptions->Triple));
 	_pp.reset(new clang::Preprocessor(_ppOptions, *diag, _langOpts, *_sm, *_hs, *this));
+	// Initialize should be here...
+	// July 8 2015
+	_pp->Initialize(*_target.get());
 	_pp->addPPCallbacks(llvm::make_unique<clang::PPCallbacks>(*callbacks));
 	clang::FrontendOptions frontendOptions;
 	InitializePreprocessor(*_pp, *_ppOptions, frontendOptions);
