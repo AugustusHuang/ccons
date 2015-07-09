@@ -18,6 +18,7 @@
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Signals.h>
+#include <llvm/Support/TargetSelect.h>
 #include <llvm-c/Target.h>
 
 #include "Console.h"
@@ -77,7 +78,9 @@ int main(const int argc, char **argv)
 		llvm::sys::PrintStackTraceOnErrorSignal();
 	}
 
-	LLVMInitializeNativeTarget();
+	InitializeNativeTarget();
+	InitializeNativeTargetAsmPrinter();
+	InitializeNativeTargetAsmParser();
 
 	std::unique_ptr<IConsole> console(createConsole(argv[0]));
 	std::unique_ptr<LineReader> reader(createReader());

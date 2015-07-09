@@ -27,7 +27,7 @@
 #include <llvm/Linker/Linker.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
-// On linux it seems that MCJIT's going to be the only JIT...
+// It seems that MCJIT's going to be the only JIT...
 // #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/IR/Module.h>
@@ -210,8 +210,8 @@ int Console::splitInput(const string& source,
 	return stmts.size();
 }
 
-clang::Stmt * Console::locateStmt(const std::string& line,
-                                  std::string *src)
+clang::Stmt *Console::locateStmt(const std::string& line,
+                                 std::string *src)
 {
 	*src += "void __ccons_internal() {\n";
 	const unsigned pos = src->length();
@@ -633,6 +633,7 @@ bool Console::compileLinkAndRun(const string& src,
 			std::vector<llvm::GenericValue> params;
 			if (_debugMode)
 				oprintf(_err, "Calling function %s()...\n", fName.c_str());
+			// Maybe there's something wrong when we link the module.
 			llvm::GenericValue result = _engine->runFunction(F, params);
 			if (!retType.isNull() && retType.getTypePtr())
 				printGV(F, result, retType);

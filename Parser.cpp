@@ -62,6 +62,7 @@ ParseOperation::ParseOperation(const clang::LangOptions& options,
 	auto sp = std::make_shared<clang::TargetOptions>(*targetOptions);
 	_target.reset(clang::TargetInfo::CreateTargetInfo(*diag, sp));
 	_hs.reset(new clang::HeaderSearch(_hsOptions, *_sm, *diag, options, &*_target));
+	// NOTE: Make sure the triple here corresponding to include path triple.
 	ApplyHeaderSearchOptions(*_hs, *_hsOptions, options, llvm::Triple(targetOptions->Triple));
 	_pp.reset(new clang::Preprocessor(_ppOptions, *diag, _langOpts, *_sm, *_hs, *this));
 	// Initialize should be here...
